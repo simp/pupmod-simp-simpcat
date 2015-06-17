@@ -1,0 +1,4 @@
+---
+fixtures:
+  symlinks:
+    concat: "#{source_dir}"
