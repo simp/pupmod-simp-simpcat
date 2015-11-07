@@ -1,7 +1,7 @@
 Summary: Concat Puppet Module
-Name: pupmod-concat
-Version: 4.0.0
-Release: 3
+Name: pupmod-simpcat
+Version: 5.0.0
+Release: 0
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -9,6 +9,7 @@ Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires: puppet >= 3.3.0
 Buildarch: noarch
 Requires: simp-bootstrap >= 4.2.0
+Obsoletes: pupmod-concat
 Obsoletes: pupmod-concat-test
 
 Prefix:"/etc/puppet/environments/simp/modules"
@@ -24,23 +25,23 @@ This puppet module provides the concat_build and concat_fragment custom types.
 %install
 [ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
 
-mkdir -p %{buildroot}/%{prefix}/concat
+mkdir -p %{buildroot}/%{prefix}/simpcat
 
 dirs='files lib manifests templates'
 for dir in $dirs; do
-  test -d $dir && cp -r $dir %{buildroot}/%{prefix}/concat
+  test -d $dir && cp -r $dir %{buildroot}/%{prefix}/simpcat
 done
 
-mkdir -p %{buildroot}/usr/share/simp/tests/modules/concat
+mkdir -p %{buildroot}/usr/share/simp/tests/modules/simpcat
 
 %clean
 [ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
 
-mkdir -p %{buildroot}/%{prefix}/concat
+mkdir -p %{buildroot}/%{prefix}/simpcat
 
 %files
 %defattr(0640,root,puppet,0750)
-/etc/puppet/environments/simp/modules/concat
+/etc/puppet/environments/simp/modules/simpcat
 
 %post
 
@@ -48,6 +49,9 @@ mkdir -p %{buildroot}/%{prefix}/concat
 # Post uninstall stuff
 
 %changelog
+* Sat Nov 07 2015 Chris Tessmer <chris.tessmer@onyxpoint.com> - 5.0.0-0
+- Renamed pupmod-concat to pupmod-pupmodcat
+
 * Fri Jan 16 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.0.0-3
 - Changed puppet-server requirement to puppet
 
