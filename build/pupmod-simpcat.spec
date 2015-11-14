@@ -9,10 +9,11 @@ Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-buildroot
 Requires: puppet >= 3.3.0
 Buildarch: noarch
 Requires: simp-bootstrap >= 4.2.0
-Obsoletes: pupmod-concat
-Obsoletes: pupmod-concat-test
+Provides: pupmod-concat = %{version}
+Obsoletes: pupmod-concat < %{version}
+Obsoletes: pupmod-concat-test < %{version}
 
-Prefix:"/etc/puppet/environments/simp/modules"
+Prefix: %{_sysconfdir}/puppet/environments/simp/modules
 
 %description
 This puppet module provides the concat_build and concat_fragment custom types.
@@ -41,7 +42,7 @@ mkdir -p %{buildroot}/%{prefix}/simpcat
 
 %files
 %defattr(0640,root,puppet,0750)
-/etc/puppet/environments/simp/modules/simpcat
+%{prefix}/simpcat
 
 %post
 
