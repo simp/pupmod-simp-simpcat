@@ -1,6 +1,6 @@
 Summary: Concat Puppet Module
 Name: pupmod-simpcat
-Version: 5.0.0
+Version: 5.0.1
 Release: 0
 License: Apache License, Version 2.0
 Group: Applications/System
@@ -50,6 +50,9 @@ mkdir -p %{buildroot}/%{prefix}/simpcat
 # Post uninstall stuff
 
 %changelog
+* Thu May 26 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 5.0.1-0
+- Update to use the $puppet_vardir fact
+
 * Sat Nov 07 2015 Chris Tessmer <chris.tessmer@onyxpoint.com> - 5.0.0-0
 - Renamed pupmod-concat to pupmod-simpcat
 
