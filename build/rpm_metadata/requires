@@ -1,0 +1,3 @@
+Provides: pupmod-concat >= 5.0.1
+Obsoletes: pupmod-concat < 5.0.1
+Obsoletes: pupmod-concat-test < 5.0.1
