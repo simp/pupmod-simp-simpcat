@@ -1,4 +1,6 @@
----
-fixtures:
-  symlinks:
-    concat: "#{source_dir}"
+--- 
+  fixtures: 
+    symlinks: 
+      simpcat: "#{source_dir}"
+      simplib: "#{source_dir}/../simplib"
+      stdlib: "#{source_dir}/../stdlib"
