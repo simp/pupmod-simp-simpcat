@@ -1,6 +1,6 @@
 {
   "name":    "simp-simpcat",
-  "version": "5.0.1",
+  "version": "6.0.0",
   "author":  "simp",
   "summary": "A collection of common SIMP functions, facts, and types",
   "license": "Apache-2.0",

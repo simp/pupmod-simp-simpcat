@@ -1,10 +1,10 @@
-Puppet::Type.type(:concat_build ).provide :concat_build do
+Puppet::Type.type(:simpcat_build ).provide :simpcat_build do
   require 'fileutils'
 
-  desc "concat_build provider"
+  desc "simpcat_build provider"
 
   def build_file(f_base)
-    if File.directory?("#{Puppet[:vardir]}/concat/fragments/#{@resource[:name]}") then
+    if File.directory?("#{Puppet[:vardir]}/simpcat/fragments/#{@resource[:name]}") then
       File.exist?("#{f_base}.out") and FileUtils.mv("#{f_base}.out","#{f_base}.prev")
 
       if not File.directory?(File.dirname(f_base)) then
@@ -13,15 +13,15 @@ Puppet::Type.type(:concat_build ).provide :concat_build do
 
       outfile = File.open("#{f_base}.out", "w+")
       input_lines = Array.new
-      Dir.chdir("#{Puppet[:vardir]}/concat/fragments/#{@resource[:name]}") do
+      Dir.chdir("#{Puppet[:vardir]}/simpcat/fragments/#{@resource[:name]}") do
         # Clean up anything that shouldn't be here.
 
-        if File.exist?('.~concat_fragments') then
-          (Dir.glob('*') - File.read(".~concat_fragments").split("\n").map{|x| x.chomp}).each do |file|
+        if File.exist?('.~simpcat_fragments') then
+          (Dir.glob('*') - File.read(".~simpcat_fragments").split("\n").map{|x| x.chomp}).each do |file|
             FileUtils.rm(file)
           end
 
-          FileUtils.rm('.~concat_fragments')
+          FileUtils.rm('.~simpcat_fragments')
         end
 
         Array(@resource[:order]).flatten.each do |pattern|
@@ -99,7 +99,7 @@ Puppet::Type.type(:concat_build ).provide :concat_build do
 
       outfile.close
     elsif not @resource[:quiet] then
-      fail Puppet::Error,"The fragments directory at '#{Puppet[:vardir]}/concat/fragments/#{@resource[:name]}' does not exist!"
+      fail Puppet::Error,"The fragments directory at '#{Puppet[:vardir]}/simpcat/fragments/#{@resource[:name]}' does not exist!"
     end
   end
 
@@ -153,8 +153,8 @@ Puppet::Type.type(:concat_build ).provide :concat_build do
   def sync_file
     begin
       if @resource[:target] and check_onlyif then
-        debug "Copying #{Puppet[:vardir]}/concat/output/#{@resource[:name]}.out to #{@resource[:target]}"
-        FileUtils.cp("#{Puppet[:vardir]}/concat/output/#{@resource[:name]}.out", @resource[:target])
+        debug "Copying #{Puppet[:vardir]}/simpcat/output/#{@resource[:name]}.out to #{@resource[:target]}"
+        FileUtils.cp("#{Puppet[:vardir]}/simpcat/output/#{@resource[:name]}.out", @resource[:target])
       elsif @resource[:target] then
         debug "Not copying to #{@resource[:target]}, 'onlyif' check failed"
       elsif @resource[:onlyif] then
@@ -169,10 +169,10 @@ Puppet::Type.type(:concat_build ).provide :concat_build do
     begin
       if @resource[:parent_build] then
         Array(@resource[:parent_build]).flatten.each do |parent_build|
-          if "#{Puppet[:vardir]}/concat/fragments/#{parent_build}".eql?(File.dirname(@resource[:target])) then
+          if "#{Puppet[:vardir]}/simpcat/fragments/#{parent_build}".eql?(File.dirname(@resource[:target])) then
             FileUtils.mkdir_p(File.dirname(@resource[:target]))
 
-            frags_record = "#{File.dirname(@resource[:target])}/.~concat_fragments"
+            frags_record = "#{File.dirname(@resource[:target])}/.~simpcat_fragments"
 
             target_shortname = File.basename(@resource[:target])
 
