@@ -1,3 +1,7 @@
+* Fri Sep 30 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.0.0-0
+- Fully deconflict with puppetlabs-concat by renaming all types and providers
+  to 'simpcat'
+
 * Thu May 26 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 5.0.1-0
 - Update to use the $puppet_vardir fact
 

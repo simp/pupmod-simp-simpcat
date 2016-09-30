@@ -14,22 +14,22 @@ describe 'stdlib' do
 
         let(:pre_condition) {
           content =  <<-EOM
-            concat_build { 'concat_test':
+            simpcat_build { 'simpcat_test':
               target => '/tmp/foo/bar.baz'
             }
-            concat_fragment { 'fragment1+concat_test':
+            simpcat_fragment { 'fragment1+simpcat_test':
               content => 'This is my amazing test'
             }
-            $foo = fragmentdir('concat_test')
+            $foo = simpcat_fragmentdir('simpcat_test')
             notify { $foo: }
           EOM
 
           content
         }
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_concat_fragment('fragment1+concat_test') }
-        it { is_expected.to contain_concat_build('concat_test') }
-        it { is_expected.to contain_notify('/var/lib/puppet/concat/fragments/concat_test') }
+        it { is_expected.to contain_simpcat_fragment('fragment1+simpcat_test') }
+        it { is_expected.to contain_simpcat_build('simpcat_test') }
+        it { is_expected.to contain_notify('/var/lib/puppet/simpcat/fragments/simpcat_test') }
       end
     end
   end
