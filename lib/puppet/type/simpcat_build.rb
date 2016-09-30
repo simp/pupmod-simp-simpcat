@@ -1,5 +1,5 @@
-Puppet::Type.newtype(:concat_build) do
-  @doc = "Build file from fragments"
+Puppet::Type.newtype(:simpcat_build) do
+  @doc = "Build file from SIMP concat fragments"
 
   def extractexe(cmd)
     # easy case: command was quoted
@@ -15,13 +15,19 @@ Puppet::Type.newtype(:concat_build) do
     fail Puppet::Error, "'#{cmd}' is unqualifed" if File.expand_path(exe) != exe
   end
 
+  newparam(:name, :namevar => true) do
+    validate do |value|
+      fail Puppet::Error, "concat_name cannot include '../'!" if value =~ /\.\.\//
+    end
+  end
+
   newparam(:clean_comments) do
     desc "If a line begins with the specified string it will not be printed in the output file."
   end
 
   newparam(:clean_whitespace) do
-    desc "Cleans whitespace.  Can be passed an array.  'lines' will cause the 
-          output to not contain any blank lines. 'all' is equivalent to 
+    desc "Cleans whitespace.  Can be passed an array.  'lines' will cause the
+          output to not contain any blank lines. 'all' is equivalent to
           [leading, trailing, lines]"
     munge do |value|
       [value].flatten!
@@ -50,17 +56,10 @@ Puppet::Type.newtype(:concat_build) do
     defaultto "\n"
   end
 
-  newparam(:name) do
-    isnamevar
-    validate do |value|
-      fail Puppet::Error, "concat_name cannot include '../'!" if value =~ /\.\.\//
-    end
-  end
-
   newparam(:onlyif) do
     desc "Copy file to target only if this command exits with status '0'"
     validate do |cmds|
-      [cmds].flatten! 
+      [cmds].flatten!
 
       [cmds].each do |cmd|
         @resource.validatecmd(cmd)
@@ -73,7 +72,7 @@ Puppet::Type.newtype(:concat_build) do
   end
 
   newparam(:sort, :boolean => true) do
-    desc "Sort the built file. This tries to sort in a human fashion with 
+    desc "Sort the built file. This tries to sort in a human fashion with
 	  1 < 2 < 10 < 20 < a, etc..  sort. Note that this will need to read
           the entire file into memory
 
@@ -124,7 +123,7 @@ Puppet::Type.newtype(:concat_build) do
 
 	  true: Uses Ruby's Array.uniq function. It will remove all duplicates
           regardless  of where they are in the file.
- 
+
 	  uniq: Acts like the uniq command found in GNU coreutils and only
           removes consecutive duplicates."
 
@@ -144,8 +143,8 @@ Puppet::Type.newtype(:concat_build) do
     def insync?(is)
       provider.register
 
-      f_base = "#{Puppet[:vardir]}/concat/output/#{@resource[:name]}"
-      
+      f_base = "#{Puppet[:vardir]}/simpcat/output/#{@resource[:name]}"
+
       provider.build_file(f_base)
 
       if provider.check_onlyif then
@@ -170,11 +169,11 @@ Puppet::Type.newtype(:concat_build) do
     end
   end
 
-  autorequire(:concat_build) do
+  autorequire(:simpcat_build) do
     req = []
-    # resource contains all concat_build resources from the catalog that are
-    # children of this concat_build
-    resource = catalog.resources.find_all { |r| r.is_a?(Puppet::Type.type(:concat_build)) and r[:parent_build] and Array(r[:parent_build]).flatten.include?(self[:name]) }
+    # resource contains all simpcat_build resources from the catalog that are
+    # children of this simpcat_build
+    resource = catalog.resources.find_all { |r| r.is_a?(Puppet::Type.type(:simpcat_build)) and r[:parent_build] and Array(r[:parent_build]).flatten.include?(self[:name]) }
     if not resource.empty? then
       req << resource
     end
@@ -182,11 +181,11 @@ Puppet::Type.newtype(:concat_build) do
     req
   end
 
-  autorequire(:concat_fragment) do
+  autorequire(:simpcat_fragment) do
     req = []
-    # resource contains all concat_fragment resources from the catalog that
-    # belog to this concat_build
-    resource = catalog.resources.find_all { |r| r.is_a?(Puppet::Type.type(:concat_fragment)) and r[:name] =~ /^#{self[:name]}\+.+/ }
+    # resource contains all simpcat_fragment resources from the catalog that
+    # belog to this simpcat_build
+    resource = catalog.resources.find_all { |r| r.is_a?(Puppet::Type.type(:simpcat_fragment)) and r[:name] =~ /^#{self[:name]}\+.+/ }
     if not resource.empty? then
       req = resource
     elsif not self[:quiet] then
@@ -196,13 +195,13 @@ Puppet::Type.newtype(:concat_build) do
     # in the catalog.
     #
     # Otherwise, clean up the fragment space in case some have changed names.
-    if resource.empty? and File.directory?("#{Puppet[:vardir]}/concat/fragments/#{self[:name]}") then
-      debug "Removing: #{Puppet[:vardir]}/concat/fragments/#{self[:name]}"
-      FileUtils.rm_rf("#{Puppet[:vardir]}/concat/fragments/#{self[:name]}")
+    if resource.empty? and File.directory?("#{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}") then
+      debug "Removing: #{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}"
+      FileUtils.rm_rf("#{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}")
     else
-      (Dir.glob("#{Puppet[:vardir]}/concat/fragments/#{self[:name]}/*").map{|x| File.basename(x)} - req.map{|x| x[:name].split('+')[1..-1].join('+')}).each do |todel|
-        debug "Removing: #{Puppet[:vardir]}/concat/fragments/#{self[:name]}/#{todel}"
-        FileUtils.rm_f("#{Puppet[:vardir]}/concat/fragments/#{self[:name]}/#{todel}")
+      (Dir.glob("#{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}/*").map{|x| File.basename(x)} - req.map{|x| x[:name].split('+')[1..-1].join('+')}).each do |todel|
+        debug "Removing: #{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}/#{todel}"
+        FileUtils.rm_f("#{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}/#{todel}")
       end
     end
     if self[:parent_build] then
@@ -212,33 +211,32 @@ Puppet::Type.newtype(:concat_build) do
       found_parent = false
       found_parent_target = false
       Array(self[:parent_build]).flatten.each do |parent_build|
-        # Checks to see if there is a concat_build for each parent_build specified
-        if catalog.resource("Concat_build[#{parent_build}]") then
+        # Checks to see if there is a simpcat_build for each parent_build specified
+        if catalog.resource("Simpcat_build[#{parent_build}]") then
           found_parent = true
         elsif not self[:quiet] then
-          warning "No concat_build found for parent_build #{parent_build}"
+          warning "No simpcat_build found for parent_build #{parent_build}"
         end
 
-        if File.dirname(self[:target]).eql?("#{Puppet[:vardir]}/concat/fragments/#{parent_build}")
+        if File.dirname(self[:target]).eql?("#{Puppet[:vardir]}/simpcat/fragments/#{parent_build}")
           found_parent_target = true
         elsif not self[:quiet] then
-          warning "Target dirname = #{File.dirname(self[:target])}, parent dir = #{Puppet[:vardir]}/concat/fragments/#{parent_build}"
+          warning "Target dirname = #{File.dirname(self[:target])}, parent dir = #{Puppet[:vardir]}/simpcat/fragments/#{parent_build}"
         end
-        # frags contains all concat_fragment resources for the parent concat_build
-        frags = catalog.resources.find_all { |r| r.is_a?(Puppet::Type.type(:concat_fragment)) and r[:name] =~ /^#{parent_build}\+\w/ }
+        # frags contains all simpcat_fragment resources for the parent simpcat_build
+        frags = catalog.resources.find_all { |r| r.is_a?(Puppet::Type.type(:simpcat_fragment)) and r[:name] =~ /^#{parent_build}\+\w/ }
         if not frags.empty? then
           req << frags
         end
       end
       if not found_parent then
-        err "No concat_build found for any of #{Array(self[:parent_build]).join(",")}"
+        err "No simpcat_build found for any of #{Array(self[:parent_build]).join(",")}"
       end
       if not found_parent_target then
-        err "Target directory is not #{Puppet[:vardir]}/concat/fragments/<parent>"
+        err "Target directory is not #{Puppet[:vardir]}/simpcat/fragments/<parent>"
       end
     end
     req.flatten!
     req
   end
-
 end
