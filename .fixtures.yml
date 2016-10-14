@@ -1,9 +1,11 @@
 ---
 fixtures:
   repositories:
-    simplib: "https://github.com/simp/pupmod-simp-simplib"
+    simplib:
+      repo: https://github.com/simp/pupmod-simp-simplib
+      branch: 5.X
     stdlib:
-      repo: "https://github.com/simp/puppetlabs-stdlib"
-      branch: "simp-master"
+      branch: 5.X
+      repo: https://github.com/simp/puppetlabs-stdlib
   symlinks:
     simpcat: "#{source_dir}"
