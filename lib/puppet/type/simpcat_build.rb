@@ -143,7 +143,7 @@ Puppet::Type.newtype(:simpcat_build) do
     def insync?(is)
       provider.register
 
-      f_base = "#{Puppet[:vardir]}/simpcat/output/#{@resource[:name]}"
+      f_base = "#{Facter.value(:puppet_vardir)}/simpcat/output/#{@resource[:name]}"
 
       provider.build_file(f_base)
 
@@ -195,13 +195,13 @@ Puppet::Type.newtype(:simpcat_build) do
     # in the catalog.
     #
     # Otherwise, clean up the fragment space in case some have changed names.
-    if resource.empty? and File.directory?("#{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}") then
-      debug "Removing: #{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}"
-      FileUtils.rm_rf("#{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}")
+    if resource.empty? and File.directory?("#{Facter.value(:puppet_vardir)}/simpcat/fragments/#{self[:name]}") then
+      debug "Removing: #{Facter.value(:puppet_vardir)}/simpcat/fragments/#{self[:name]}"
+      FileUtils.rm_rf("#{Facter.value(:puppet_vardir)}/simpcat/fragments/#{self[:name]}")
     else
-      (Dir.glob("#{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}/*").map{|x| File.basename(x)} - req.map{|x| x[:name].split('+')[1..-1].join('+')}).each do |todel|
-        debug "Removing: #{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}/#{todel}"
-        FileUtils.rm_f("#{Puppet[:vardir]}/simpcat/fragments/#{self[:name]}/#{todel}")
+      (Dir.glob("#{Facter.value(:puppet_vardir)}/simpcat/fragments/#{self[:name]}/*").map{|x| File.basename(x)} - req.map{|x| x[:name].split('+')[1..-1].join('+')}).each do |todel|
+        debug "Removing: #{Facter.value(:puppet_vardir)}/simpcat/fragments/#{self[:name]}/#{todel}"
+        FileUtils.rm_f("#{Facter.value(:puppet_vardir)}/simpcat/fragments/#{self[:name]}/#{todel}")
       end
     end
     if self[:parent_build] then
@@ -218,10 +218,10 @@ Puppet::Type.newtype(:simpcat_build) do
           warning "No simpcat_build found for parent_build #{parent_build}"
         end
 
-        if File.dirname(self[:target]).eql?("#{Puppet[:vardir]}/simpcat/fragments/#{parent_build}")
+        if File.dirname(self[:target]).eql?("#{Facter.value(:puppet_vardir)}/simpcat/fragments/#{parent_build}")
           found_parent_target = true
         elsif not self[:quiet] then
-          warning "Target dirname = #{File.dirname(self[:target])}, parent dir = #{Puppet[:vardir]}/simpcat/fragments/#{parent_build}"
+          warning "Target dirname = #{File.dirname(self[:target])}, parent dir = #{Facter.value(:puppet_vardir)}/simpcat/fragments/#{parent_build}"
         end
         # frags contains all simpcat_fragment resources for the parent simpcat_build
         frags = catalog.resources.find_all { |r| r.is_a?(Puppet::Type.type(:simpcat_fragment)) and r[:name] =~ /^#{parent_build}\+\w/ }
@@ -233,7 +233,7 @@ Puppet::Type.newtype(:simpcat_build) do
         err "No simpcat_build found for any of #{Array(self[:parent_build]).join(",")}"
       end
       if not found_parent_target then
-        err "Target directory is not #{Puppet[:vardir]}/simpcat/fragments/<parent>"
+        err "Target directory is not #{Facter.value(:puppet_vardir)}/simpcat/fragments/<parent>"
       end
     end
     req.flatten!

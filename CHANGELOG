@@ -1,3 +1,7 @@
+* Mon Nov 14 2016 Nick Miller <nick.miller@onyxpoint.com> - 6.0.1-0
+- Changed from using Puppet[:vardir] to Facter.value(:puppet_vardir), which
+  accounts for the different vardirs on agent and server.
+
 * Fri Sep 30 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.0.0-0
 - Fully deconflict with puppetlabs-concat by renaming all types and providers
   to 'simpcat'

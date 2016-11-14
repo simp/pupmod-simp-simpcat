@@ -46,7 +46,7 @@ Puppet::Type.newtype(:simpcat_fragment) do
     def insync?(is)
       provider.register
 
-      file = "#{Puppet[:vardir]}/simpcat/fragments/#{resource[:group]}/#{resource[:fragment]}"
+      file = "#{Facter.value(:puppet_vardir)}/simpcat/fragments/#{resource[:group]}/#{resource[:fragment]}"
       return false unless File.exist?(file)
 
       if resource[:content] == '!!simpcat_fragment_undef_content' then
