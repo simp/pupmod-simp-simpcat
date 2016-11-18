@@ -1,4 +1,7 @@
-* Mon Nov 14 2016 Nick Miller <nick.miller@onyxpoint.com> - 6.0.1-0
+* Mon Nov 21 2016 Chris Tessmer <chris.tessmer@onyxpoint.com> - 6.0.0-0
+- Minor cleanup
+
+* Mon Nov 14 2016 Nick Miller <nick.miller@onyxpoint.com> - 6.0.0-0
 - Changed from using Puppet[:vardir] to Facter.value(:puppet_vardir), which
   accounts for the different vardirs on agent and server.
 
