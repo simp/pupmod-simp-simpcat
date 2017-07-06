@@ -1,3 +1,6 @@
+* Thu Jul 06 2017 Liz Nemsick <lnemsick.simp@gmail.com> - 6.0.1-0
+- Confine puppet version in metadata.json
+
 * Mon Nov 21 2016 Chris Tessmer <chris.tessmer@onyxpoint.com> - 6.0.0-0
 - Minor cleanup
 
