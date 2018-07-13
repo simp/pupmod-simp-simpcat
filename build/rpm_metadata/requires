@@ -1,5 +1,0 @@
-Obsoletes: pupmod-concat < 5.0.1
-Obsoletes: pupmod-concat-test < 5.0.1
-Provides: pupmod-concat >= 5.0.1
-Requires: pupmod-puppetlabs-stdlib < 5.0.0-0
-Requires: pupmod-puppetlabs-stdlib >= 4.9.0-0
