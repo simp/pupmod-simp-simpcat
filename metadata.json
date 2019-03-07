@@ -1,6 +1,6 @@
 {
   "name": "simp-simpcat",
-  "version": "6.0.2",
+  "version": "6.0.3",
   "author": "SIMP Team",
   "summary": "Builds files from fragments",
   "license": "Apache-2.0",
@@ -14,7 +14,7 @@
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 4.9.0 < 5.0.0"
+      "version_requirement": ">= 4.9.0 < 6.0.0"
     }
   ],
   "operatingsystem_support": [
